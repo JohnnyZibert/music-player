@@ -1,17 +1,6 @@
 import React from 'react'
 
-export interface IData {
-  name: string
-  artist: string
-  cover: string
-  id: string
-  active: boolean
-  color: string[]
-  audio: string
-}
-export interface ICurrentSong {
-  currentSong: IData
-}
+import { ICurrentSong } from './types'
 
 export const Song = ({ currentSong }: ICurrentSong) => {
   return (
