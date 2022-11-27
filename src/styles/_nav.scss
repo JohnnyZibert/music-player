@@ -15,3 +15,9 @@ nav {
     }
   }
 }
+
+@media (max-width: 768px) {
+  button {
+    z-index: 10;
+  }
+}

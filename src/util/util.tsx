@@ -1,15 +1,12 @@
 import { RefObject } from 'react'
 
-export const playAudio = (
+export const playAudio = async (
   audioRef: RefObject<HTMLAudioElement>,
   isPlaying: boolean
 ) => {
   if (isPlaying) {
-    const playPromise = audioRef.current?.play()
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        audioRef.current?.play()
-      })
+    if (audioRef.current !== null) {
+      await audioRef.current.play()
     }
   }
 }

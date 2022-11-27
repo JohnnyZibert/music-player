@@ -33,6 +33,11 @@ export const Player = ({
   setCurrentSong,
   setSong,
 }: IProps) => {
+  const [songInfo, setSongInfo] = useState<ISongInfo>({
+    currentTime: 0,
+    duration: 0,
+    currentPercentage: 0,
+  })
   const audioRef = useRef<HTMLAudioElement>(null)
   const checkAudioRef = audioRef.current !== null
 
@@ -48,12 +53,18 @@ export const Player = ({
   const timeUpdateHandler = (e: ChangeEvent<HTMLAudioElement>) => {
     const current = e.target.currentTime
     const duration = e.target.duration
-    setSongInfo({ ...songInfo, currentTime: current, duration })
+    const roundedCurrent = Math.round(current)
+    const roundedDuration = Math.round(duration)
+    const animationPercentage = Math.round(
+      (roundedCurrent / roundedDuration) * 100
+    )
+    setSongInfo({
+      ...songInfo,
+      currentTime: current,
+      duration,
+      currentPercentage: animationPercentage,
+    })
   }
-  const [songInfo, setSongInfo] = useState<ISongInfo>({
-    currentTime: 0,
-    duration: 0,
-  })
 
   const getTime = (time: number) => {
     return time
@@ -68,20 +79,20 @@ export const Player = ({
 
     setSongInfo({ ...songInfo, currentTime: Number(e.target.value) })
   }
-  const handleSkipTrack = (direction: string) => {
+  const handleSkipTrack = async (direction: string) => {
     const currentIndex = songs.findIndex((song) => song.id === currentSong.id)
     if (direction === 'skip-forward') {
-      setCurrentSong(songs[(currentIndex + 1) % songs.length])
+      await setCurrentSong(songs[(currentIndex + 1) % songs.length])
     }
     if (direction === 'skip-back') {
       if ((currentIndex - 1) % songs.length === -1) {
-        setCurrentSong(songs[songs.length - 1])
-        playAudio(audioRef, isPlaying)
+        await setCurrentSong(songs[songs.length - 1])
+        await playAudio(audioRef, isPlaying)
         return
       }
-      setCurrentSong(songs[(currentIndex - 1) % songs.length])
+      await setCurrentSong(songs[(currentIndex - 1) % songs.length])
     }
-    playAudio(audioRef, isPlaying)
+    await playAudio(audioRef, isPlaying)
   }
   useEffect(() => {
     const newSong = songs.map((song) => {
@@ -101,17 +112,33 @@ export const Player = ({
     playAudio(audioRef, isPlaying)
   }, [currentSong])
 
+  const animationTrack = {
+    transform: `translateX(${songInfo.currentPercentage}%)`,
+  }
+  const endedHandler = async () => {
+    const currentIndex = songs.findIndex((song) => song.id === currentSong.id)
+    await setCurrentSong(songs[(currentIndex + 1) % songs.length])
+  }
+
   return (
     <div className="player-container">
       <div className="time-control">
         <p>{getTime(songInfo.currentTime)}</p>
-        <input
-          type="range"
-          min={0}
-          max={songInfo.duration || 0}
-          value={songInfo.currentTime}
-          onChange={dragHandler}
-        />
+        <div
+          className="track"
+          style={{
+            background: `linear-gradient(to right,${currentSong.color[0]},${currentSong.color[1]})`,
+          }}
+        >
+          <input
+            type="range"
+            min={0}
+            max={songInfo.duration || 0}
+            value={songInfo.currentTime}
+            onChange={dragHandler}
+          />
+          <div className="animate-track" style={animationTrack}></div>
+        </div>
         <p>{getTime(songInfo.duration ? songInfo.duration : Number('0:00'))}</p>
       </div>
       <div className="play-control">
@@ -139,6 +166,7 @@ export const Player = ({
         src={currentSong.audio}
         ref={audioRef}
         onLoadedMetadata={timeUpdateHandler}
+        onEnded={endedHandler}
       />
     </div>
   )

@@ -17,7 +17,7 @@ function App() {
   const [isOpenLibrary, setIsOpenLibrary] = useState<boolean>(false)
 
   return (
-    <div>
+    <div className={`App ${isOpenLibrary ? 'animate-active' : ''}`}>
       <ToggleLibrary
         isOpenLibrary={isOpenLibrary}
         setIsOpenLibrary={setIsOpenLibrary}

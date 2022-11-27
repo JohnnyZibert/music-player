@@ -13,4 +13,5 @@ export interface IData {
 export interface ISongInfo {
   currentTime: number
   duration: number
+  currentPercentage: number
 }
