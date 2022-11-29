@@ -24,8 +24,8 @@ export const LibrarySong = ({
   isPlaying,
 }: IProps) => {
   const selectTrack = songs.filter((state) => state.id === id)
-  const selectHandler = () => {
-    setCurrentSong(selectTrack[0])
+  const selectHandler = async () => {
+    await setCurrentSong(selectTrack[0])
     const newSong = songs.map((song) => {
       if (song.id === id) {
         return {
@@ -39,8 +39,8 @@ export const LibrarySong = ({
         }
       }
     })
-    setSong(newSong)
-    playAudio(audioRef, isPlaying)
+    await setSong(newSong)
+    await playAudio(audioRef, isPlaying)
   }
 
   return (

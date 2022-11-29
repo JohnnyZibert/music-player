@@ -37,6 +37,24 @@ export const Player = ({
   // const audioRef = useRef<HTMLAudioElement>(null)
   const checkAudioRef = audioRef.current !== null
 
+  const activeLibraryHandler = (prevNext: IData) => {
+    const newSong = songs.map((song) => {
+      if (song.id === prevNext.id) {
+        return {
+          ...song,
+          active: true,
+        }
+      } else {
+        return {
+          ...song,
+          active: false,
+        }
+      }
+    })
+    setSong(newSong)
+    playAudio(audioRef, isPlaying)
+  }
+
   const audioClick = () => {
     if (isPlaying) {
       checkAudioRef && audioRef.current.pause()
@@ -90,23 +108,6 @@ export const Player = ({
       await setCurrentSong(songs[(currentIndex - 1) % songs.length])
       activeLibraryHandler(songs[(currentIndex - 1) % songs.length])
     }
-  }
-  const activeLibraryHandler = (prevNext: IData) => {
-    const newSong = songs.map((song) => {
-      if (song.id === prevNext.id) {
-        return {
-          ...song,
-          active: true,
-        }
-      } else {
-        return {
-          ...song,
-          active: false,
-        }
-      }
-    })
-    setSong(newSong)
-    playAudio(audioRef, isPlaying)
   }
 
   const animationTrack = {
