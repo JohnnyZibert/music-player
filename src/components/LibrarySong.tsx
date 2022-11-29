@@ -26,7 +26,6 @@ export const LibrarySong = ({
   const selectTrack = songs.filter((state) => state.id === id)
   const selectHandler = () => {
     setCurrentSong(selectTrack[0])
-    // playAudio(audioRef, isPlaying)
     const newSong = songs.map((song) => {
       if (song.id === id) {
         return {

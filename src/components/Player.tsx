@@ -5,13 +5,7 @@ import {
   faPlay,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, {
-  ChangeEvent,
-  Dispatch,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { ChangeEvent, Dispatch, RefObject, useState } from 'react'
 
 import { playAudio } from '../util/util'
 import { ICurrentSong, IData, ISongInfo } from './types'
@@ -23,6 +17,7 @@ interface IProps extends ICurrentSong {
   songs: IData[]
   setCurrentSong: Dispatch<IData>
   setSong: Dispatch<IData[]>
+  audioRef: RefObject<HTMLAudioElement>
 }
 
 export const Player = ({
@@ -32,13 +27,14 @@ export const Player = ({
   songs,
   setCurrentSong,
   setSong,
+  audioRef,
 }: IProps) => {
   const [songInfo, setSongInfo] = useState<ISongInfo>({
     currentTime: 0,
     duration: 0,
     currentPercentage: 0,
   })
-  const audioRef = useRef<HTMLAudioElement>(null)
+  // const audioRef = useRef<HTMLAudioElement>(null)
   const checkAudioRef = audioRef.current !== null
 
   const audioClick = () => {
@@ -83,20 +79,21 @@ export const Player = ({
     const currentIndex = songs.findIndex((song) => song.id === currentSong.id)
     if (direction === 'skip-forward') {
       await setCurrentSong(songs[(currentIndex + 1) % songs.length])
+      activeLibraryHandler(songs[(currentIndex + 1) % songs.length])
     }
     if (direction === 'skip-back') {
       if ((currentIndex - 1) % songs.length === -1) {
         await setCurrentSong(songs[songs.length - 1])
-        await playAudio(audioRef, isPlaying)
+        activeLibraryHandler(songs[songs.length - 1])
         return
       }
       await setCurrentSong(songs[(currentIndex - 1) % songs.length])
+      activeLibraryHandler(songs[(currentIndex - 1) % songs.length])
     }
-    await playAudio(audioRef, isPlaying)
   }
-  useEffect(() => {
+  const activeLibraryHandler = (prevNext: IData) => {
     const newSong = songs.map((song) => {
-      if (song.id === currentSong.id) {
+      if (song.id === prevNext.id) {
         return {
           ...song,
           active: true,
@@ -110,7 +107,7 @@ export const Player = ({
     })
     setSong(newSong)
     playAudio(audioRef, isPlaying)
-  }, [currentSong])
+  }
 
   const animationTrack = {
     transform: `translateX(${songInfo.currentPercentage}%)`,
