@@ -11,7 +11,7 @@ import data from './data'
 
 function App() {
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [songs, setSong] = useState(data())
+  const [songs, setSong] = useState<IData[]>(data())
   const [currentSong, setCurrentSong] = useState<IData>(songs[0])
   const [isPlaying, setIsPlaying] = useState<boolean>(false)
   const [isOpenLibrary, setIsOpenLibrary] = useState<boolean>(false)

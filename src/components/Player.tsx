@@ -34,7 +34,6 @@ export const Player = ({
     duration: 0,
     currentPercentage: 0,
   })
-  // const audioRef = useRef<HTMLAudioElement>(null)
   const checkAudioRef = audioRef.current !== null
 
   const activeLibraryHandler = (prevNext: IData) => {
